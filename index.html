@@ -21,6 +21,20 @@
             border-color: #3b82f6;
             transform: scale(1.02);
         }
+        /* Input Field Customization */
+        .coord-input {
+            width: 100%;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+        .coord-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 text-gray-800">
@@ -33,7 +47,7 @@
                 <h1 class="text-2xl font-bold">합격증 개인정보 마스킹</h1>
             </div>
             <p class="mt-2 text-blue-100 text-sm">
-                PDF 하단의 담당자 정보("OOOO고등학교/OOO")를 마스킹 처리합니다.<br>
+                PDF 하단의 <strong>담당자 정보, 페이지 번호, 출력 날짜</strong>를 모두 가립니다.<br>
                 파일은 서버에 업로드되지 않고 브라우저에서 안전하게 처리됩니다.
             </p>
         </div>
@@ -71,30 +85,57 @@
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <div class="flex items-center gap-2 mb-3">
                     <i data-lucide="settings-2" class="w-4 h-4 text-yellow-700"></i>
-                    <h3 class="font-bold text-yellow-800 text-sm">가림 상자 위치 조정 (단위: 포인트)</h3>
+                    <h3 class="font-bold text-yellow-800 text-sm">마스킹 영역 위치 조정 (단위: 포인트)</h3>
                 </div>
                 <p class="text-xs text-yellow-700 mb-4">
-                    PDF 하단 좌측의 담당자 정보를 덮을 하얀 상자의 위치와 크기입니다.<br>
-                    기본값은 일반적인 A4 문서 하단에 맞춰져 있으나, 텍스트가 덜 가려진다면 조절하세요.
+                    문서 하단의 세 가지 정보를 가리기 위한 위치값입니다. 기본값으로 잘 가려지지 않는 경우 숫자를 조정하세요.<br>
+                    (X: 가로 위치, Y: 밑에서부터의 높이, W: 너비, H: 높이)
                 </p>
                 
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <label class="block text-gray-600 mb-1">X 좌표 (가로 위치)</label>
-                        <input type="number" id="posX" value="20" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-gray-600 mb-1">Y 좌표 (세로 위치)</label>
-                        <input type="number" id="posY" value="10" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-gray-600 mb-1">너비 (가릴 길이)</label>
-                        <input type="number" id="boxWidth" value="550" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-gray-600 mb-1">높이 (가릴 두께)</label>
-                        <input type="number" id="boxHeight" value="20" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-center">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-yellow-200">
+                                <th class="pb-2 font-medium text-left pl-2">구분</th>
+                                <th class="pb-2 font-medium">X (가로)</th>
+                                <th class="pb-2 font-medium">Y (세로)</th>
+                                <th class="pb-2 font-medium">W (너비)</th>
+                                <th class="pb-2 font-medium">H (높이)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <!-- Area 1: Left (Contact Info) -->
+                            <tr class="border-b border-yellow-100">
+                                <td class="py-2 text-left pl-2 font-medium">
+                                    좌측 (담당자)
+                                </td>
+                                <td class="py-2 px-1"><input type="number" id="area1_x" value="20" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area1_y" value="10" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area1_w" value="250" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area1_h" value="20" class="coord-input"></td>
+                            </tr>
+                            <!-- Area 2: Center (Page Number) -->
+                            <tr class="border-b border-yellow-100">
+                                <td class="py-2 text-left pl-2 font-medium">
+                                    중앙 (페이지)
+                                </td>
+                                <td class="py-2 px-1"><input type="number" id="area2_x" value="270" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area2_y" value="10" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area2_w" value="60" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area2_h" value="20" class="coord-input"></td>
+                            </tr>
+                            <!-- Area 3: Right (Date) -->
+                            <tr>
+                                <td class="py-2 text-left pl-2 font-medium">
+                                    우측 (날짜)
+                                </td>
+                                <td class="py-2 px-1"><input type="number" id="area3_x" value="400" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area3_y" value="10" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area3_w" value="250" class="coord-input"></td>
+                                <td class="py-2 px-1"><input type="number" id="area3_h" value="20" class="coord-input"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -194,23 +235,43 @@
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
                 
                 const pages = pdfDoc.getPages();
-                const { width, height } = pages[0].getSize();
 
-                // Get user settings
-                const x = parseFloat(document.getElementById('posX').value);
-                const y = parseFloat(document.getElementById('posY').value);
-                const w = parseFloat(document.getElementById('boxWidth').value);
-                const h = parseFloat(document.getElementById('boxHeight').value);
+                // Define the 3 areas to mask
+                const areas = [
+                    // Area 1: Left (Contact Info)
+                    {
+                        x: parseFloat(document.getElementById('area1_x').value),
+                        y: parseFloat(document.getElementById('area1_y').value),
+                        w: parseFloat(document.getElementById('area1_w').value),
+                        h: parseFloat(document.getElementById('area1_h').value)
+                    },
+                    // Area 2: Center (Page Number)
+                    {
+                        x: parseFloat(document.getElementById('area2_x').value),
+                        y: parseFloat(document.getElementById('area2_y').value),
+                        w: parseFloat(document.getElementById('area2_w').value),
+                        h: parseFloat(document.getElementById('area2_h').value)
+                    },
+                    // Area 3: Right (Date)
+                    {
+                        x: parseFloat(document.getElementById('area3_x').value),
+                        y: parseFloat(document.getElementById('area3_y').value),
+                        w: parseFloat(document.getElementById('area3_w').value),
+                        h: parseFloat(document.getElementById('area3_h').value)
+                    }
+                ];
 
-                // Iterate all pages and draw white rectangle
+                // Iterate all pages and draw white rectangles for each area
                 pages.forEach(page => {
-                    page.drawRectangle({
-                        x: x,
-                        y: y,
-                        width: w,
-                        height: h,
-                        color: PDFLib.rgb(1, 1, 1), // White color
-                        opacity: 1,
+                    areas.forEach(area => {
+                        page.drawRectangle({
+                            x: area.x,
+                            y: area.y,
+                            width: area.w,
+                            height: area.h,
+                            color: PDFLib.rgb(1, 1, 1), // White color
+                            opacity: 1,
+                        });
                     });
                 });
 
